@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using TelegramServer.ViewModel;
 
 namespace TelegramServer
 {
@@ -23,6 +24,8 @@ namespace TelegramServer
         public MainWindow()
         {
             InitializeComponent();
+            ServerViewModel serverViewModel = new ServerViewModel();
+            DataContext = serverViewModel;
         }
     }
 }

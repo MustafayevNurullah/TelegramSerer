@@ -7,12 +7,33 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="500">
     <Grid>
-        <ListView Margin="10" Name="lvUsers">
+        <ListView Margin="10" ItemsSource="{Binding ServerList}" Name="lvUsers">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="SenderIp" Width="150"  />
-                    <GridViewColumn Header="Message" Width="150"  />
-                    <GridViewColumn Header="SentIp" Width="150"  />
+                    <GridViewColumn Header="SenderIp" Width="100" >
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock  Background="Azure" Padding="5,0" Text="{Binding SenderIp}" TextAlignment="Center" VerticalAlignment="Center">
+                                </TextBlock>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Message" Width="100" >
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock  Background="Azure" Padding="5,0" Text="{Binding Message }" TextAlignment="Center" VerticalAlignment="Center">
+                                </TextBlock>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="SentIp" Width="100" >
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock  Background="Azure" Padding="5,0" Text="{Binding SentIp}" TextAlignment="Center" VerticalAlignment="Center">
+                                </TextBlock>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
                 </GridView>
             </ListView.View>
         </ListView>

@@ -7,12 +7,9 @@ using System.Threading.Tasks;
 
 namespace TelegramServer.Entity
 {
-   public class ServerEntity
+   public class ClientEntity
     {
         public int Id { get; set; }
-        public TcpClient client { get; set; }
-        public string SenderIp { get; set; }
-        public string Message { get; set; }
-        public string SentIp { get; set; }
+        public TcpClient Client { get; set; }
     }
 }
