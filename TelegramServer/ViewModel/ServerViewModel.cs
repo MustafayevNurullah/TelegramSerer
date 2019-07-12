@@ -36,13 +36,13 @@ namespace TelegramServer.ViewModel
 
             StartTcpServer();
         }
-
-
         public string GetImagePath(byte[] buffer, int counter)
         {
             ImageConverter ic = new ImageConverter();
             Image img = (Image)ic.ConvertFrom(buffer);
             Bitmap bitmap1 = new Bitmap(img);
+            Random random = new Random();
+            counter += random.Next(1,100);
             bitmap1.Save($@"C:\Users\User\Desktop\image{counter}.png");
             var imagepath = $@"C:\Users\User\Desktop\image{counter}.png";
             return imagepath;
@@ -60,19 +60,23 @@ namespace TelegramServer.ViewModel
                 int j = 0;
                 while (true)
                 {
-                byte[] bytes = new byte[256];
+                byte[] bytes = new byte[11000000];
                         int i;
                        stream = List[j].Client.GetStream();
-                        try
-                        {
                             if (stream.DataAvailable)
                         {
-                              i = stream.Read(bytes, 0, bytes.Length);
+                            i = stream.Read(bytes, 0, bytes.Length);
                               data = Encoding.ASCII.GetString(bytes, 0, i);
                             if(data.Contains("PNG"))
                             {
-                            GetImagePath(bytes,1);
-                                data = null;
+                                   
+                                   // GetImagePath(bytes,1);
+                              SentClient(bytes, List[j].Id);
+                                    ServerEntity serverEntity = new ServerEntity();
+                                    serverEntity.Message =data ;
+                                    var action = new Action(() => { ServerList.Add(serverEntity); });
+                                    Task.Run(() => App.Current.Dispatcher.BeginInvoke(action)).Wait();
+                                    data = null;
                                 bytes = null;
                             }
                             else
@@ -85,11 +89,6 @@ namespace TelegramServer.ViewModel
                             byte[] msg = Encoding.ASCII.GetBytes(arr[0]);
                             SentClient(msg, List[j].Id);
                             }
-                        }
-                        }
-                        catch (Exception e)
-                        {
-                            MessageBox.Show(e.Message);
                         }
                         j++;
                     if(j==List.Count)
@@ -151,7 +150,6 @@ namespace TelegramServer.ViewModel
                     stream.Write(data1, 0, data1.Length);
                 }
             }
-
         }
         ObservableCollection<ServerEntity> serverlist;
         public ObservableCollection<ServerEntity> ServerList
