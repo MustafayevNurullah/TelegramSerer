@@ -38,9 +38,7 @@ namespace TelegramServer.ViewModel
                 while (true)
                 {
                         int i;
-                    if(stream!=null)
-                    {
-                        
+                    NetworkStream stream = client.GetStream();
                         while ((i = stream.Read(bytes, 0, bytes.Length)) != 0)
                         {
                             data = Encoding.ASCII.GetString(bytes, 0, i);
@@ -53,7 +51,6 @@ namespace TelegramServer.ViewModel
                             byte[] msg = Encoding.ASCII.GetBytes(data);
                             SentClient(msg);
                         }
-                    }
                     }
                     client.Close();
             }
@@ -70,17 +67,22 @@ namespace TelegramServer.ViewModel
         TcpClient client = new TcpClient();
         void AcceptClient()
         {
+            bool a = true;
                 IPAddress localAddr = IPAddress.Parse(IpAddress);
                 //    TcpListener server = new TcpListener(port);
                 server = new TcpListener(localAddr, TcpPort);
                 // Start listening for client requests.
                 server.Start();
-            Task task1 = Task.Run(() => StartTcpServer());
 
             while (true)
             {
                 client = server.AcceptTcpClient();
                 stream = client.GetStream();
+                if(a)
+                {
+            Task task1 = Task.Run(() => StartTcpServer());
+                    a = false;
+                }
                 ClientEntity clients = new ClientEntity();
                 clients.Client = client;
                 clients.Id = counter;
