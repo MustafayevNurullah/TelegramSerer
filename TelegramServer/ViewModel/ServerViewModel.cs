@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Drawing;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -35,32 +36,62 @@ namespace TelegramServer.ViewModel
 
             StartTcpServer();
         }
+
+
+        public string GetImagePath(byte[] buffer, int counter)
+        {
+            ImageConverter ic = new ImageConverter();
+            Image img = (Image)ic.ConvertFrom(buffer);
+            Bitmap bitmap1 = new Bitmap(img);
+            bitmap1.Save($@"C:\Users\User\Desktop\image{counter}.png");
+            var imagepath = $@"C:\Users\User\Desktop\image{counter}.png";
+            return imagepath;
+        }
+
+
         void StartTcpServer()
         {
             try
             {
+                while(true)
+                {
 
-                string data = null;
-                byte[] bytes = new byte[256];
+               string data = null;
                 int j = 0;
                 while (true)
                 {
-                    int i;
-                    stream = List[j].Client.GetStream();
-
-                    if ((i = stream.Read(bytes, 0, bytes.Length)) != 0)
+                byte[] bytes = new byte[256];
+                        int i;
+                       stream = List[j].Client.GetStream();
+                        try
                         {
-                            data = Encoding.ASCII.GetString(bytes, 0, i);
+                            if (stream.DataAvailable)
+                        {
+                              i = stream.Read(bytes, 0, bytes.Length);
+                              data = Encoding.ASCII.GetString(bytes, 0, i);
+                            if(data.Contains("PNG"))
+                            {
+                            GetImagePath(bytes,1);
+                                data = null;
+                                bytes = null;
+                            }
+                            else
+                            {
                             ServerEntity serverEntity = new ServerEntity();
                             string[] arr = data.Split('`');
                             serverEntity.Message = arr[0];
-                            // serverEntity.SenderIp = arr[1];
                             var action = new Action(() => { ServerList.Add(serverEntity); });
                             Task.Run(() => App.Current.Dispatcher.BeginInvoke(action)).Wait();
-                            byte[] msg = Encoding.ASCII.GetBytes(data);
-                           // SentClient(msg, List[j].Id);
+                            byte[] msg = Encoding.ASCII.GetBytes(arr[0]);
+                            SentClient(msg, List[j].Id);
+                            }
                         }
-                    j++;
+                        }
+                        catch (Exception e)
+                        {
+                            MessageBox.Show(e.Message);
+                        }
+                        j++;
                     if(j==List.Count)
                     {
                         j = 0;
@@ -68,10 +99,15 @@ namespace TelegramServer.ViewModel
 
                 }
                 client.Close();
+                }
             }
             catch (SocketException e)
             {
                 MessageBox.Show("SocketException: {0}", e.Message);
+            }
+            catch( Exception e)
+            {
+                MessageBox.Show("Exception" + e.Message);
             }
             finally
             {
@@ -79,6 +115,7 @@ namespace TelegramServer.ViewModel
                 server.Stop();
             }
         }
+        Thread thread ;
         TcpClient client = new TcpClient();
         void AcceptClient()
         {
@@ -98,7 +135,7 @@ namespace TelegramServer.ViewModel
                 clients.Id = counter;
                 counter++;
                 List.Add(clients);
-                Thread thread = new Thread(Recur);
+                thread = new Thread(Recur);
                 thread.Start();
             }
         }
@@ -108,7 +145,7 @@ namespace TelegramServer.ViewModel
             // client.Connect(endPoint);
             foreach (var item in List)
             {
-                if (item.Id != Id)
+                if (item.Id !=Id )
                 {
                     stream = item.Client.GetStream();
                     stream.Write(data1, 0, data1.Length);
