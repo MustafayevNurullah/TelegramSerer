@@ -16,7 +16,7 @@ namespace TelegramServer.ViewModel
 {
     public class ServerViewModel : BaseViewModel
     {
-        static string IpAddress = "10.1.16.27";
+        static string IpAddress = "10.1.16.13";
         static int TcpPort = 1032;
         public ServerViewModel()
         {
